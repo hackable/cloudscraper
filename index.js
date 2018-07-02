@@ -3,7 +3,7 @@ var requestModule = require('request');
 var jar = requestModule.jar();
 
 var request      = requestModule.defaults({jar: jar}), // Cookies should be enabled
-    UserAgent    = '(Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36',
+    UserAgent    = 'Ubuntu Chromium/34.0.1847.116 Chrome/34.0.1847.116 Safari/537.36',
     Timeout      = 6000, // Cloudflare requires a delay of 5 seconds, so wait for at least 6.
     cloudscraper = {};
 
