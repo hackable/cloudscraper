@@ -14,9 +14,11 @@ var request      = requestModule.defaults({jar: jar}), // Cookies should be enab
  * @param  {Object}    headers     Hash with headers, e.g. {'Referer': 'http://google.com', 'User-Agent': '...'}
  */
 cloudscraper.get = function(url, callback, headers) {
+  let tmpJar = request.jar();
   performRequest({
     method: 'GET',
     url: url,
+    jar: tmpJar,
     headers: headers
   }, callback);
 };
