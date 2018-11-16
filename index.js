@@ -121,6 +121,8 @@ function performRequest(options, callback) {
               processResponseBody(options, error, response, body, callback);
          });
 
+       } else {
+         processResponseBody(options, error, response, body, callback);
        }
 
     }
