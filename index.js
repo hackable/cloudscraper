@@ -1,7 +1,7 @@
 var vm = require('vm');
 var requestModule = require('request');
 var jar = requestModule.jar();
-var zlib = require('zlib');
+var decompressResponse = require('decompress-response');
 
 var request      = requestModule.defaults({jar: jar}), // Cookies should be enabled
     UserAgent    = 'Ubuntu Chromium/34.0.1847.116 Chrome/34.0.1847.116 Safari/537.36',
@@ -93,7 +93,7 @@ function performRequest(options, callback) {
       return callback({ errorType: 0, error: error }, body, response);
     }
 
-    var encoding = response.headers['content-encoding'];
+    response = decompressResponse(response);
 
     stringBody = body.toString('utf8');
 
@@ -111,19 +111,7 @@ function performRequest(options, callback) {
       setCookieAndReload(response, stringBody, options, callback);
     } else {
 
-       if (encoding && encoding.indexOf('gzip') >= 0) {
-
-         zlib.gunzip(body, function(err, dezipped) {
-              //Error
-              if (err) throw err;
-              body = dezipped.toString();
-              // All is good
-              processResponseBody(options, error, response, body, callback);
-         });
-
-       } else {
-         processResponseBody(options, error, response, body, callback);
-       }
+      processResponseBody(options, error, response, body, callback);
 
     }
   });
