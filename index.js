@@ -1,7 +1,6 @@
 var vm = require('vm');
 var requestModule = require('request');
 var jar = requestModule.jar();
-var decompressResponse = require('decompress-response');
 
 var request      = requestModule.defaults({jar: jar}), // Cookies should be enabled
     UserAgent    = 'Ubuntu Chromium/34.0.1847.116 Chrome/34.0.1847.116 Safari/537.36',
@@ -18,6 +17,7 @@ cloudscraper.get = function(url, callback, headers) {
   let tmpJar = request.jar();
   performRequest({
     method: 'GET',
+    gzip: true,
     url: url,
     jar: tmpJar,
     headers: headers
@@ -49,6 +49,7 @@ cloudscraper.post = function(url, body, callback, headers) {
 
   performRequest({
     method: 'POST',
+    gzip: true,
     body: data,
     url: url,
     headers: headers
@@ -93,8 +94,6 @@ function performRequest(options, callback) {
       return callback({ errorType: 0, error: error }, body, response);
     }
 
-    response = decompressResponse(response);
-
     stringBody = body.toString('utf8');
 
     if (validationError = checkForErrors(error, stringBody)) {
@@ -110,9 +109,8 @@ function performRequest(options, callback) {
                stringBody.indexOf('sucuri_cloudproxy_js') !== -1) {
       setCookieAndReload(response, stringBody, options, callback);
     } else {
-
+      // All is good
       processResponseBody(options, error, response, body, callback);
-
     }
   });
 }
