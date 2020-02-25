@@ -20,6 +20,7 @@ cloudscraper.get = function(url, callback, headers) {
   performRequest({
     method: 'GET',
     gzip: true,
+    timeout: 10000,
     url: url,
     jar: tmpJar,
     headers: headers
