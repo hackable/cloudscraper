@@ -1,11 +1,27 @@
 var vm = require('vm');
 var requestModule = require('request');
 var jar = requestModule.jar();
+var tls = require('tls');
 
 var request      = requestModule.defaults({jar: jar}), // Cookies should be enabled
     UserAgent    = 'Ubuntu Chromium/34.0.1847.116 Chrome/34.0.1847.116 Safari/537.36',
     Timeout      = 6000, // Cloudflare requires a delay of 5 seconds, so wait for at least 6.
     cloudscraper = {};
+
+
+function getRandom(arr, n) {
+    var result = new Array(n),
+        len = arr.length,
+        taken = new Array(len);
+    if (n > len)
+        throw new RangeError("getRandom: more elements taken than available");
+    while (n--) {
+        var x = Math.floor(Math.random() * len);
+        result[n] = arr[x in taken ? taken[x] : x];
+        taken[x] = --len in taken ? taken[len] : len;
+    }
+    return result;
+}
 
 /**
  * Performs get request to url with headers.
@@ -13,16 +29,21 @@ var request      = requestModule.defaults({jar: jar}), // Cookies should be enab
  * @param  {Function}  callback    function(error, response, body) {}
  * @param  {Object}    headers     Hash with headers, e.g. {'Referer': 'http://google.com', 'User-Agent': '...'}
  */
-cloudscraper.get = function(url, callback, headers) {
+cloudscraper.get = function(url, callback, headers, agentOpts) {
+  console.log("url", url)
+  console.log("headers", headers)
+  let ciphers =  tls.getCiphers();
+  let cps = getRandom(ciphers,ciphers.length).join(':').toUpperCase();
+  //headers['Referer'] = 'https://www.amazon.com';
+  //delete headers['Referer']
   let tmpJar = request.jar();
-  headers['DNT'] = 1;
-  headers['Referer'] = url;
   performRequest({
     method: 'GET',
     gzip: true,
-    timeout: 10000,
     url: url,
+    timeout: 10000,
     jar: tmpJar,
+    agentOptions: { ciphers: cps },
     headers: headers
   }, callback);
 };
